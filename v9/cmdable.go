@@ -120,7 +120,47 @@ func (m *ClientMock) ExpireAt(ctx context.Context, key string, tm time.Time) *re
 		return m.client.ExpireAt(ctx, key, tm)
 	}
 
-	return m.Called(ctx).Get(0).(*redis.BoolCmd)
+	return m.Called(ctx, key, tm).Get(0).(*redis.BoolCmd)
+}
+
+func (m *ClientMock) ExpireTime(ctx context.Context, key string) *redis.DurationCmd {
+	if !m.hasStub("ExpireTime") {
+		return m.client.ExpireTime(ctx, key)
+	}
+
+	return m.Called(ctx, key).Get(0).(*redis.DurationCmd)
+}
+
+func (m *ClientMock) ExpireNX(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd {
+	if !m.hasStub("ExpireNX") {
+		return m.client.ExpireNX(ctx, key, expiration)
+	}
+
+	return m.Called(ctx, key, expiration).Get(0).(*redis.BoolCmd)
+}
+
+func (m *ClientMock) ExpireXX(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd {
+	if !m.hasStub("ExpireXX") {
+		return m.client.ExpireXX(ctx, key, expiration)
+	}
+
+	return m.Called(ctx, key, expiration).Get(0).(*redis.BoolCmd)
+}
+
+func (m *ClientMock) ExpireGT(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd {
+	if !m.hasStub("ExpireGT") {
+		return m.client.ExpireGT(ctx, key, expiration)
+	}
+
+	return m.Called(ctx, key, expiration).Get(0).(*redis.BoolCmd)
+}
+
+func (m *ClientMock) ExpireLT(ctx context.Context, key string, expiration time.Duration) *redis.BoolCmd {
+	if !m.hasStub("ExpireLT") {
+		return m.client.ExpireLT(ctx, key, expiration)
+	}
+
+	return m.Called(ctx, key, expiration).Get(0).(*redis.BoolCmd)
 }
 
 func (m *ClientMock) Keys(ctx context.Context, pattern string) *redis.StringSliceCmd {
@@ -195,6 +235,14 @@ func (m *ClientMock) PExpireAt(ctx context.Context, key string, tm time.Time) *r
 	return m.Called(ctx, key, tm).Get(0).(*redis.BoolCmd)
 }
 
+func (m *ClientMock) PExpireTime(ctx context.Context, key string) *redis.DurationCmd {
+	if !m.hasStub("PExpireTime") {
+		return m.client.PExpireTime(ctx, key)
+	}
+
+	return m.Called(ctx, key).Get(0).(*redis.DurationCmd)
+}
+
 func (m *ClientMock) PTTL(ctx context.Context, key string) *redis.DurationCmd {
 	if !m.hasStub("PTTL") {
 		return m.client.PTTL(ctx, key)
@@ -246,6 +294,14 @@ func (m *ClientMock) RestoreReplace(ctx context.Context, key string, ttl time.Du
 func (m *ClientMock) Sort(ctx context.Context, key string, sort *redis.Sort) *redis.StringSliceCmd {
 	if !m.hasStub("Sort") {
 		return m.client.Sort(ctx, key, sort)
+	}
+
+	return m.Called(ctx, key, sort).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) SortRO(ctx context.Context, key string, sort *redis.Sort) *redis.StringSliceCmd {
+	if !m.hasStub("SortRO") {
+		return m.client.SortRO(ctx, key, sort)
 	}
 
 	return m.Called(ctx, key, sort).Get(0).(*redis.StringSliceCmd)
@@ -363,6 +419,14 @@ func (m *ClientMock) BitPos(ctx context.Context, key string, bit int64, pos ...i
 	return m.Called(ctx, key, bit, pos).Get(0).(*redis.IntCmd)
 }
 
+func (m *ClientMock) BitPosSpan(ctx context.Context, key string, bit int8, start, end int64, span string) *redis.IntCmd {
+	if !m.hasStub("BitPosSpan") {
+		return m.client.BitPosSpan(ctx, key, bit, start, end, span)
+	}
+
+	return m.Called(ctx, key, bit, start, end, span).Get(0).(*redis.IntCmd)
+}
+
 func (m *ClientMock) BitField(ctx context.Context, key string, args ...interface{}) *redis.IntSliceCmd {
 	if !m.hasStub("BitField") {
 		return m.client.BitField(ctx, key, args)
@@ -409,6 +473,14 @@ func (m *ClientMock) GetEx(ctx context.Context, key string, expiration time.Dura
 	}
 
 	return m.Called(ctx, key, expiration).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) GetDel(ctx context.Context, key string) *redis.StringCmd {
+	if !m.hasStub("GetDel") {
+		return m.client.GetDel(ctx, key)
+	}
+
+	return m.Called(ctx, key).Get(0).(*redis.StringCmd)
 }
 
 func (m *ClientMock) GetRange(ctx context.Context, key string, start, end int64) *redis.StringCmd {
@@ -483,9 +555,17 @@ func (m *ClientMock) Set(ctx context.Context, key string, value interface{}, exp
 	return m.Called(ctx, key, value, expiration).Get(0).(*redis.StatusCmd)
 }
 
-func (m *ClientMock) SetEX(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
-	if !m.hasStub("SetEX") {
-		return m.client.Set(ctx, key, value, expiration)
+func (m *ClientMock) SetArgs(ctx context.Context, key string, value interface{}, a redis.SetArgs) *redis.StatusCmd {
+	if !m.hasStub("SetArgs") {
+		return m.client.SetArgs(ctx, key, value, a)
+	}
+
+	return m.Called(ctx, key, value, a).Get(0).(*redis.StatusCmd)
+}
+
+func (m *ClientMock) SetEx(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
+	if !m.hasStub("SetEx") {
+		return m.client.SetEx(ctx, key, value, expiration)
 	}
 
 	return m.Called(ctx, key, value, expiration).Get(0).(*redis.StatusCmd)
@@ -531,12 +611,36 @@ func (m *ClientMock) StrLen(ctx context.Context, key string) *redis.IntCmd {
 	return m.Called(ctx, key).Get(0).(*redis.IntCmd)
 }
 
+func (m *ClientMock) Copy(ctx context.Context, sourceKey string, destKey string, db int, replace bool) *redis.IntCmd {
+	if !m.hasStub("Copy") {
+		return m.client.Copy(ctx, sourceKey, destKey, db, replace)
+	}
+
+	return m.Called(ctx, sourceKey, destKey, db, replace).Get(0).(*redis.IntCmd)
+}
+
 func (m *ClientMock) BLPop(ctx context.Context, timeout time.Duration, keys ...string) *redis.StringSliceCmd {
 	if !m.hasStub("BLPop") {
 		return m.client.BLPop(ctx, timeout, keys...)
 	}
 
 	return m.Called(ctx, timeout, keys).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) BLMove(ctx context.Context, source, destination, srcpos, destpos string, timeout time.Duration) *redis.StringCmd {
+	if !m.hasStub("BLMove") {
+		return m.client.BLMove(ctx, source, destination, srcpos, destpos, timeout)
+	}
+
+	return m.Called(ctx, source, destination, srcpos, destpos, timeout).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) BLMPop(ctx context.Context, timeout time.Duration, direction string, count int64, keys ...string) *redis.KeyValuesCmd {
+	if !m.hasStub("BLMPop") {
+		return m.client.BLMPop(ctx, timeout, direction, count, keys...)
+	}
+
+	return m.Called(ctx, timeout, direction, count, keys).Get(0).(*redis.KeyValuesCmd)
 }
 
 func (m *ClientMock) BRPop(ctx context.Context, timeout time.Duration, keys ...string) *redis.StringSliceCmd {
@@ -553,6 +657,14 @@ func (m *ClientMock) BRPopLPush(ctx context.Context, source, destination string,
 	}
 
 	return m.Called(ctx, source, destination, timeout).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) LCS(ctx context.Context, q *redis.LCSQuery) *redis.LCSCmd {
+	if !m.hasStub("LCS") {
+		return m.client.LCS(ctx, q)
+	}
+
+	return m.Called(ctx, q).Get(0).(*redis.LCSCmd)
 }
 
 func (m *ClientMock) LIndex(ctx context.Context, key string, index int64) *redis.StringCmd {
@@ -595,6 +707,22 @@ func (m *ClientMock) LLen(ctx context.Context, key string) *redis.IntCmd {
 	return m.Called(ctx, key).Get(0).(*redis.IntCmd)
 }
 
+func (m *ClientMock) LMove(ctx context.Context, source, destination, srcpos, destpos string) *redis.StringCmd {
+	if !m.hasStub("LMove") {
+		return m.client.LMove(ctx, source, destination, srcpos, destpos)
+	}
+
+	return m.Called(ctx, source, destination, srcpos, destpos).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) LMPop(ctx context.Context, direction string, count int64, keys ...string) *redis.KeyValuesCmd {
+	if !m.hasStub("LMPop") {
+		return m.client.LMPop(ctx, direction, count, keys...)
+	}
+
+	return m.Called(ctx, direction, count, keys).Get(0).(*redis.KeyValuesCmd)
+}
+
 func (m *ClientMock) LPos(ctx context.Context, key string, value string, args redis.LPosArgs) *redis.IntCmd {
 	if !m.hasStub("LPos") {
 		return m.client.LPos(ctx, key, value, args)
@@ -617,6 +745,14 @@ func (m *ClientMock) LPop(ctx context.Context, key string) *redis.StringCmd {
 	}
 
 	return m.Called(ctx, key).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) LPopCount(ctx context.Context, key string, count int) *redis.StringSliceCmd {
+	if !m.hasStub("LPopCount") {
+		return m.client.LPopCount(ctx, key, count)
+	}
+
+	return m.Called(ctx, key, count).Get(0).(*redis.StringSliceCmd)
 }
 
 func (m *ClientMock) LPush(ctx context.Context, key string, values ...interface{}) *redis.IntCmd {
@@ -673,6 +809,14 @@ func (m *ClientMock) RPop(ctx context.Context, key string) *redis.StringCmd {
 	}
 
 	return m.Called(ctx, key).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) RPopCount(ctx context.Context, key string, count int) *redis.StringSliceCmd {
+	if !m.hasStub("RPopCount") {
+		return m.client.RPopCount(ctx, key, count)
+	}
+
+	return m.Called(ctx, key, count).Get(0).(*redis.StringSliceCmd)
 }
 
 func (m *ClientMock) RPopLPush(ctx context.Context, source, destination string) *redis.StringCmd {
@@ -755,6 +899,14 @@ func (m *ClientMock) ClientList(ctx context.Context) *redis.StringCmd {
 	return m.Called(ctx).Get(0).(*redis.StringCmd)
 }
 
+func (m *ClientMock) ClientInfo(ctx context.Context) *redis.ClientInfoCmd {
+	if !m.hasStub("ClientInfo") {
+		return m.client.ClientInfo(ctx)
+	}
+
+	return m.Called(ctx).Get(0).(*redis.ClientInfoCmd)
+}
+
 func (m *ClientMock) ClientPause(ctx context.Context, dur time.Duration) *redis.BoolCmd {
 	if !m.hasStub("ClientPause") {
 		return m.client.ClientPause(ctx, dur)
@@ -763,12 +915,20 @@ func (m *ClientMock) ClientPause(ctx context.Context, dur time.Duration) *redis.
 	return m.Called(ctx, dur).Get(0).(*redis.BoolCmd)
 }
 
-func (m *ClientMock) ConfigGet(ctx context.Context, parameter string) *redis.SliceCmd {
+func (m *ClientMock) ClientUnpause(ctx context.Context) *redis.BoolCmd {
+	if !m.hasStub("ClientUnpause") {
+		return m.client.ClientUnpause(ctx)
+	}
+
+	return m.Called(ctx).Get(0).(*redis.BoolCmd)
+}
+
+func (m *ClientMock) ConfigGet(ctx context.Context, parameter string) *redis.MapStringStringCmd {
 	if !m.hasStub("ConfigGet") {
 		return m.client.ConfigGet(ctx, parameter)
 	}
 
-	return m.Called(ctx, parameter).Get(0).(*redis.SliceCmd)
+	return m.Called(ctx, parameter).Get(0).(*redis.MapStringStringCmd)
 }
 
 func (m *ClientMock) ConfigResetStat(ctx context.Context) *redis.StatusCmd {
@@ -891,6 +1051,14 @@ func (m *ClientMock) SlaveOf(ctx context.Context, host, port string) *redis.Stat
 	return m.Called(ctx, host, port).Get(0).(*redis.StatusCmd)
 }
 
+func (m *ClientMock) SlowLogGet(ctx context.Context, num int64) *redis.SlowLogCmd {
+	if !m.hasStub("SlowLogGet") {
+		return m.client.SlowLogGet(ctx, num)
+	}
+
+	return m.Called(ctx, num).Get(0).(*redis.SlowLogCmd)
+}
+
 func (m *ClientMock) Time(ctx context.Context) *redis.TimeCmd {
 	if !m.hasStub("Time") {
 		return m.client.Time(ctx)
@@ -910,6 +1078,22 @@ func (m *ClientMock) Eval(ctx context.Context, script string, keys []string, arg
 func (m *ClientMock) EvalSha(ctx context.Context, sha1 string, keys []string, args ...interface{}) *redis.Cmd {
 	if !m.hasStub("EvalSha") {
 		return m.client.EvalSha(ctx, sha1, keys, args...)
+	}
+
+	return m.Called(ctx, sha1, keys, args).Get(0).(*redis.Cmd)
+}
+
+func (m *ClientMock) EvalRO(ctx context.Context, script string, keys []string, args ...interface{}) *redis.Cmd {
+	if !m.hasStub("EvalRO") {
+		return m.client.EvalRO(ctx, script, keys, args...)
+	}
+
+	return m.Called(ctx, script, keys, args).Get(0).(*redis.Cmd)
+}
+
+func (m *ClientMock) EvalShaRO(ctx context.Context, sha1 string, keys []string, args ...interface{}) *redis.Cmd {
+	if !m.hasStub("EvalShaRO") {
+		return m.client.EvalShaRO(ctx, sha1, keys, args...)
 	}
 
 	return m.Called(ctx, sha1, keys, args).Get(0).(*redis.Cmd)
@@ -963,6 +1147,14 @@ func (m *ClientMock) Publish(ctx context.Context, channel string, message interf
 	return m.Called(ctx, channel, message).Get(0).(*redis.IntCmd)
 }
 
+func (m *ClientMock) SPublish(ctx context.Context, channel string, message interface{}) *redis.IntCmd {
+	if !m.hasStub("SPublish") {
+		return m.client.SPublish(ctx, channel, message)
+	}
+
+	return m.Called(ctx, channel, message).Get(0).(*redis.IntCmd)
+}
+
 func (m *ClientMock) PubSubChannels(ctx context.Context, pattern string) *redis.StringSliceCmd {
 	if !m.hasStub("PubSubChannels") {
 		return m.client.PubSubChannels(ctx, pattern)
@@ -971,12 +1163,12 @@ func (m *ClientMock) PubSubChannels(ctx context.Context, pattern string) *redis.
 	return m.Called(ctx, pattern).Get(0).(*redis.StringSliceCmd)
 }
 
-func (m *ClientMock) PubSubNumSub(ctx context.Context, channels ...string) *redis.StringIntMapCmd {
+func (m *ClientMock) PubSubNumSub(ctx context.Context, channels ...string) *redis.MapStringIntCmd {
 	if !m.hasStub("PubSubNumSub") {
 		return m.client.PubSubNumSub(ctx, channels...)
 	}
 
-	return m.Called(ctx, channels).Get(0).(*redis.StringIntMapCmd)
+	return m.Called(ctx, channels).Get(0).(*redis.MapStringIntCmd)
 }
 
 func (m *ClientMock) PubSubNumPat(ctx context.Context) *redis.IntCmd {
@@ -987,12 +1179,52 @@ func (m *ClientMock) PubSubNumPat(ctx context.Context) *redis.IntCmd {
 	return m.Called(ctx).Get(0).(*redis.IntCmd)
 }
 
+func (m *ClientMock) PubSubShardChannels(ctx context.Context, pattern string) *redis.StringSliceCmd {
+	if !m.hasStub("PubSubShardChannels") {
+		return m.client.PubSubShardChannels(ctx, pattern)
+	}
+
+	return m.Called(ctx, pattern).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) PubSubShardNumSub(ctx context.Context, channels ...string) *redis.MapStringIntCmd {
+	if !m.hasStub("PubSubShardNumSub") {
+		return m.client.PubSubShardNumSub(ctx, channels...)
+	}
+
+	return m.Called(ctx, channels).Get(0).(*redis.MapStringIntCmd)
+}
+
+func (m *ClientMock) ClusterMyShardID(ctx context.Context) *redis.StringCmd {
+	if !m.hasStub("ClusterMyShardID") {
+		return m.client.ClusterMyShardID(ctx)
+	}
+
+	return m.Called(ctx).Get(0).(*redis.StringCmd)
+}
+
 func (m *ClientMock) ClusterSlots(ctx context.Context) *redis.ClusterSlotsCmd {
 	if !m.hasStub("ClusterSlots") {
 		return m.client.ClusterSlots(ctx)
 	}
 
 	return m.Called(ctx).Get(0).(*redis.ClusterSlotsCmd)
+}
+
+func (m *ClientMock) ClusterShards(ctx context.Context) *redis.ClusterShardsCmd {
+	if !m.hasStub("ClusterShards") {
+		return m.client.ClusterShards(ctx)
+	}
+
+	return m.Called(ctx).Get(0).(*redis.ClusterShardsCmd)
+}
+
+func (m *ClientMock) ClusterLinks(ctx context.Context) *redis.ClusterLinksCmd {
+	if !m.hasStub("ClusterLinks") {
+		return m.client.ClusterLinks(ctx)
+	}
+
+	return m.Called(ctx).Get(0).(*redis.ClusterLinksCmd)
 }
 
 func (m *ClientMock) ClusterNodes(ctx context.Context) *redis.StringCmd {
@@ -1164,7 +1396,7 @@ func (m *ClientMock) GeoRadius(ctx context.Context, key string, longitude, latit
 }
 
 func (m *ClientMock) GeoRadiusStore(ctx context.Context, key string, longitude, latitude float64, query *redis.GeoRadiusQuery) *redis.IntCmd {
-	if !m.hasStub("GeoRadiusRO") {
+	if !m.hasStub("GeoRadiusStore") {
 		return m.client.GeoRadiusStore(ctx, key, longitude, latitude, query)
 	}
 
@@ -1180,11 +1412,35 @@ func (m *ClientMock) GeoRadiusByMember(ctx context.Context, key, member string, 
 }
 
 func (m *ClientMock) GeoRadiusByMemberStore(ctx context.Context, key, member string, query *redis.GeoRadiusQuery) *redis.IntCmd {
-	if !m.hasStub("GeoRadiusByMemberRO") {
+	if !m.hasStub("GeoRadiusByMemberStore") {
 		return m.client.GeoRadiusByMemberStore(ctx, key, member, query)
 	}
 
 	return m.Called(ctx, key, member, query).Get(0).(*redis.IntCmd)
+}
+
+func (m *ClientMock) GeoSearch(ctx context.Context, key string, q *redis.GeoSearchQuery) *redis.StringSliceCmd {
+	if !m.hasStub("GeoSearch") {
+		return m.client.GeoSearch(ctx, key, q)
+	}
+
+	return m.Called(ctx, key, q).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) GeoSearchLocation(ctx context.Context, key string, q *redis.GeoSearchLocationQuery) *redis.GeoSearchLocationCmd {
+	if !m.hasStub("GeoSearchLocation") {
+		return m.client.GeoSearchLocation(ctx, key, q)
+	}
+
+	return m.Called(ctx, key, q).Get(0).(*redis.GeoSearchLocationCmd)
+}
+
+func (m *ClientMock) GeoSearchStore(ctx context.Context, key, store string, q *redis.GeoSearchStoreQuery) *redis.IntCmd {
+	if !m.hasStub("GeoSearchStore") {
+		return m.client.GeoSearchStore(ctx, key, store, q)
+	}
+
+	return m.Called(ctx, key, store, q).Get(0).(*redis.IntCmd)
 }
 
 func (m *ClientMock) GeoDist(ctx context.Context, key string, member1, member2, unit string) *redis.FloatCmd {
@@ -1209,6 +1465,30 @@ func (m *ClientMock) Command(ctx context.Context) *redis.CommandsInfoCmd {
 	}
 
 	return m.Called(ctx).Get(0).(*redis.CommandsInfoCmd)
+}
+
+func (m *ClientMock) CommandList(ctx context.Context, filter *redis.FilterBy) *redis.StringSliceCmd {
+	if !m.hasStub("CommandList") {
+		return m.client.CommandList(ctx, filter)
+	}
+
+	return m.Called(ctx, filter).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) CommandGetKeys(ctx context.Context, commands ...interface{}) *redis.StringSliceCmd {
+	if !m.hasStub("CommandGetKeys") {
+		return m.client.CommandGetKeys(ctx, commands...)
+	}
+
+	return m.Called(ctx, commands).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) CommandGetKeysAndFlags(ctx context.Context, commands ...interface{}) *redis.KeyFlagsCmd {
+	if !m.hasStub("CommandGetKeysAndFlags") {
+		return m.client.CommandGetKeysAndFlags(ctx, commands)
+	}
+
+	return m.Called(ctx, commands).Get(0).(*redis.KeyFlagsCmd)
 }
 
 func (m *ClientMock) ClientKillByFilter(ctx context.Context, keys ...string) *redis.IntCmd {
@@ -1251,10 +1531,58 @@ func (m *ClientMock) ClientID(ctx context.Context) *redis.IntCmd {
 	return m.Called(ctx).Get(0).(*redis.IntCmd)
 }
 
+func (m *ClientMock) ClientUnblock(ctx context.Context, id int64) *redis.IntCmd {
+	if !m.hasStub("ClientUnblock") {
+		return m.client.ClientUnblock(ctx, id)
+	}
+
+	return m.Called(ctx, id).Get(0).(*redis.IntCmd)
+}
+
+func (m *ClientMock) ClientUnblockWithError(ctx context.Context, id int64) *redis.IntCmd {
+	if !m.hasStub("ClientUnblockWithError") {
+		return m.client.ClientUnblockWithError(ctx, id)
+	}
+
+	return m.Called(ctx, id).Get(0).(*redis.IntCmd)
+}
+
 func (m *ClientMock) ScanType(ctx context.Context, cursor uint64, match string, count int64, keyType string) *redis.ScanCmd {
 	if !m.hasStub("ScanType") {
 		return m.client.ScanType(ctx, cursor, match, count, keyType)
 	}
 
 	return m.Called(ctx, cursor, match, count, keyType).Get(0).(*redis.ScanCmd)
+}
+
+func (m *ClientMock) ACLDryRun(ctx context.Context, username string, command ...interface{}) *redis.StringCmd {
+	if !m.hasStub("ACLDryRun") {
+		return m.client.ACLDryRun(ctx, username, command...)
+	}
+
+	return m.Called(ctx, username, command).Get(0).(*redis.StringCmd)
+}
+
+func (m *ClientMock) ACLLog(ctx context.Context, count int64) *redis.ACLLogCmd {
+	if !m.hasStub("ACLLog") {
+		return m.client.ACLLog(ctx, count)
+	}
+
+	return m.Called(ctx, count).Get(0).(*redis.ACLLogCmd)
+}
+
+func (m *ClientMock) ACLLogReset(ctx context.Context) *redis.StatusCmd {
+	if !m.hasStub("ACLLogReset") {
+		return m.client.ACLLogReset(ctx)
+	}
+
+	return m.Called(ctx).Get(0).(*redis.StatusCmd)
+}
+
+func (m *ClientMock) ModuleLoadex(ctx context.Context, conf *redis.ModuleLoadexConfig) *redis.StringCmd {
+	if !m.hasStub("ModuleLoadex") {
+		return m.client.ModuleLoadex(ctx, conf)
+	}
+
+	return m.Called(ctx, conf).Get(0).(*redis.StringCmd)
 }

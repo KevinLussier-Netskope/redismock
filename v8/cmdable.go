@@ -120,7 +120,7 @@ func (m *ClientMock) ExpireAt(ctx context.Context, key string, tm time.Time) *re
 		return m.client.ExpireAt(ctx, key, tm)
 	}
 
-	return m.Called(ctx).Get(0).(*redis.BoolCmd)
+	return m.Called(ctx, key, tm).Get(0).(*redis.BoolCmd)
 }
 
 func (m *ClientMock) Keys(ctx context.Context, pattern string) *redis.StringSliceCmd {

@@ -94,6 +94,22 @@ func (m *ClientMock) XClaimJustID(ctx context.Context, a *redis.XClaimArgs) *red
 	return m.Called(ctx, a).Get(0).(*redis.StringSliceCmd)
 }
 
+func (m *ClientMock) XAutoClaim(ctx context.Context, a *redis.XAutoClaimArgs) *redis.XAutoClaimCmd {
+	if !m.hasStub("XAutoClaim") {
+		return m.client.XAutoClaim(ctx, a)
+	}
+
+	return m.Called(ctx, a).Get(0).(*redis.XAutoClaimCmd)
+}
+
+func (m *ClientMock) XAutoClaimJustID(ctx context.Context, a *redis.XAutoClaimArgs) *redis.XAutoClaimJustIDCmd {
+	if !m.hasStub("XAutoClaimJustID") {
+		return m.client.XAutoClaimJustID(ctx, a)
+	}
+
+	return m.Called(ctx, a).Get(0).(*redis.XAutoClaimJustIDCmd)
+}
+
 func (m *ClientMock) XGroupCreate(ctx context.Context, stream, group, start string) *redis.StatusCmd {
 	if !m.hasStub("XGroupCreate") {
 		return m.client.XGroupCreate(ctx, stream, group, start)
@@ -116,6 +132,14 @@ func (m *ClientMock) XGroupDestroy(ctx context.Context, stream, group string) *r
 	}
 
 	return m.Called(ctx, stream, group).Get(0).(*redis.IntCmd)
+}
+
+func (m *ClientMock) XGroupCreateConsumer(ctx context.Context, stream, group, consumer string) *redis.IntCmd {
+	if !m.hasStub("XGroupCreateConsumer") {
+		return m.client.XGroupCreateConsumer(ctx, stream, group, consumer)
+	}
+
+	return m.Called(ctx, stream, group, consumer).Get(0).(*redis.IntCmd)
 }
 
 func (m *ClientMock) XGroupSetID(ctx context.Context, stream, group, start string) *redis.StatusCmd {
@@ -158,20 +182,36 @@ func (m *ClientMock) XReadStreams(ctx context.Context, streams ...string) *redis
 	return m.Called(ctx, streams).Get(0).(*redis.XStreamSliceCmd)
 }
 
-func (m *ClientMock) XTrim(ctx context.Context, key string, maxLen int64) *redis.IntCmd {
-	if !m.hasStub("XTrim") {
-		return m.client.XTrim(ctx, key, maxLen)
+func (m *ClientMock) XTrimMaxLen(ctx context.Context, key string, maxLen int64) *redis.IntCmd {
+	if !m.hasStub("XTrimMaxLen") {
+		return m.client.XTrimMaxLen(ctx, key, maxLen)
 	}
 
 	return m.Called(ctx, key, maxLen).Get(0).(*redis.IntCmd)
 }
 
-func (m *ClientMock) XTrimApprox(ctx context.Context, key string, maxLen int64) *redis.IntCmd {
-	if !m.hasStub("XTrimApprox") {
-		return m.client.XTrimApprox(ctx, key, maxLen)
+func (m *ClientMock) XTrimMaxLenApprox(ctx context.Context, key string, maxLen, limit int64) *redis.IntCmd {
+	if !m.hasStub("XTrimMaxLenApprox") {
+		return m.client.XTrimMaxLenApprox(ctx, key, maxLen, limit)
 	}
 
 	return m.Called(ctx, key, maxLen).Get(0).(*redis.IntCmd)
+}
+
+func (m *ClientMock) XTrimMinID(ctx context.Context, key string, minID string) *redis.IntCmd {
+	if !m.hasStub("XTrimMinID") {
+		return m.client.XTrimMinID(ctx, key, minID)
+	}
+
+	return m.Called(ctx, key, minID).Get(0).(*redis.IntCmd)
+}
+
+func (m *ClientMock) XTrimMinIDApprox(ctx context.Context, key string, minID string, limit int64) *redis.IntCmd {
+	if !m.hasStub("XTrimMinIDApprox") {
+		return m.client.XTrimMinIDApprox(ctx, key, minID, limit)
+	}
+
+	return m.Called(ctx, key, minID).Get(0).(*redis.IntCmd)
 }
 
 func (m *ClientMock) XGroupCreateMkStream(ctx context.Context, stream, group, start string) *redis.StatusCmd {
@@ -196,4 +236,20 @@ func (m *ClientMock) XInfoStream(ctx context.Context, key string) *redis.XInfoSt
 	}
 
 	return m.Called(ctx, key).Get(0).(*redis.XInfoStreamCmd)
+}
+
+func (m *ClientMock) XInfoStreamFull(ctx context.Context, key string, count int) *redis.XInfoStreamFullCmd {
+	if !m.hasStub("XInfoStreamFull") {
+		return m.client.XInfoStreamFull(ctx, key, count)
+	}
+
+	return m.Called(ctx, key, count).Get(0).(*redis.XInfoStreamFullCmd)
+}
+
+func (m *ClientMock) XInfoConsumers(ctx context.Context, key string, group string) *redis.XInfoConsumersCmd {
+	if !m.hasStub("XInfoConsumers") {
+		return m.client.XInfoConsumers(ctx, key, group)
+	}
+
+	return m.Called(ctx, key, group).Get(0).(*redis.XInfoConsumersCmd)
 }

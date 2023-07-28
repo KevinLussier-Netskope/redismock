@@ -30,12 +30,12 @@ func (m *ClientMock) HGet(ctx context.Context, key, field string) *redis.StringC
 	return m.Called(ctx, key, field).Get(0).(*redis.StringCmd)
 }
 
-func (m *ClientMock) HGetAll(ctx context.Context, key string) *redis.StringStringMapCmd {
+func (m *ClientMock) HGetAll(ctx context.Context, key string) *redis.MapStringStringCmd {
 	if !m.hasStub("HGetAll") {
 		return m.client.HGetAll(ctx, key)
 	}
 
-	return m.Called(ctx, key).Get(0).(*redis.StringStringMapCmd)
+	return m.Called(ctx, key).Get(0).(*redis.MapStringStringCmd)
 }
 
 func (m *ClientMock) HIncrBy(ctx context.Context, key, field string, incr int64) *redis.IntCmd {
@@ -108,6 +108,22 @@ func (m *ClientMock) HVals(ctx context.Context, key string) *redis.StringSliceCm
 	}
 
 	return m.Called(ctx, key).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) HRandField(ctx context.Context, key string, count int) *redis.StringSliceCmd {
+	if !m.hasStub("HRandField") {
+		return m.client.HRandField(ctx, key, count)
+	}
+
+	return m.Called(ctx, key, count).Get(0).(*redis.StringSliceCmd)
+}
+
+func (m *ClientMock) HRandFieldWithValues(ctx context.Context, key string, count int) *redis.KeyValueSliceCmd {
+	if !m.hasStub("HRandFieldWithValues") {
+		return m.client.HRandFieldWithValues(ctx, key, count)
+	}
+
+	return m.Called(ctx, key, count).Get(0).(*redis.KeyValueSliceCmd)
 }
 
 func (m *ClientMock) HScan(ctx context.Context, key string, cursor uint64, match string, count int64) *redis.ScanCmd {

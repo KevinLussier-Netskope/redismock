@@ -46,6 +46,14 @@ func (m *ClientMock) SInter(ctx context.Context, keys ...string) *redis.StringSl
 	return m.Called(ctx, keys).Get(0).(*redis.StringSliceCmd)
 }
 
+func (m *ClientMock) SInterCard(ctx context.Context, limit int64, keys ...string) *redis.IntCmd {
+	if !m.hasStub("SInterCard") {
+		return m.client.SInterCard(ctx, limit, keys...)
+	}
+
+	return m.Called(ctx, limit, keys).Get(0).(*redis.IntCmd)
+}
+
 func (m *ClientMock) SInterStore(ctx context.Context, destination string, keys ...string) *redis.IntCmd {
 	if !m.hasStub("SInterStore") {
 		return m.client.SInterStore(ctx, destination, keys...)
@@ -60,6 +68,14 @@ func (m *ClientMock) SIsMember(ctx context.Context, key string, member interface
 	}
 
 	return m.Called(ctx, key, member).Get(0).(*redis.BoolCmd)
+}
+
+func (m *ClientMock) SMIsMember(ctx context.Context, key string, members ...interface{}) *redis.BoolSliceCmd {
+	if !m.hasStub("SMIsMember") {
+		return m.client.SMIsMember(ctx, key, members...)
+	}
+
+	return m.Called(ctx, key, members).Get(0).(*redis.BoolSliceCmd)
 }
 
 func (m *ClientMock) SMembers(ctx context.Context, key string) *redis.StringSliceCmd {
